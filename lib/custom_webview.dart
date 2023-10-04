@@ -6,17 +6,21 @@ import 'package:flutter/services.dart';
 
 const String _viewType = 'FlutterCustomWebView';
 
+enum CallMethod { post, get }
+
 class CustomWebView extends StatelessWidget {
   const CustomWebView({
     super.key,
     this.header,
     this.body,
+    this.callMethod = CallMethod.get,
     required this.url,
   });
 
   final Map<String, String>? header;
   final Map<String, String>? body;
   final String url;
+  final CallMethod callMethod;
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +38,12 @@ class CustomWebView extends StatelessWidget {
           id: params.id,
           viewType: _viewType,
           layoutDirection: TextDirection.ltr,
-          creationParams: {}
-            ..addAll(header ?? {})
-            ..addAll(body ?? {})
-            ..addAll({'url': url}),
+          creationParams: {
+            "header": header ?? {},
+            "body": body ?? {},
+            "url": url,
+            "method": callMethod == CallMethod.post ? "post" : "get",
+          },
           creationParamsCodec: const StandardMessageCodec(),
           onFocus: () {
             params.onFocusChanged(true);

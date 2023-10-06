@@ -8,6 +8,8 @@ import android.view.View
 import android.webkit.*
 import androidx.annotation.RequiresApi
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
@@ -17,13 +19,21 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 
+private var binaryMessenger: BinaryMessenger? = null
+private const val eventChannel = "flutter.webview.eventChannel"
+private var sink: EventChannel.EventSink? = null
+
 /** CustomWebviewPlugin */
 class CustomWebviewPlugin: FlutterPlugin{
   private val viewType = "FlutterCustomWebView"
+
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     flutterPluginBinding
       .platformViewRegistry
       .registerViewFactory(viewType, NativeWebViewFactory())
+
+    binaryMessenger = flutterPluginBinding.binaryMessenger
+    EventChannel(binaryMessenger, eventChannel).setStreamHandler(EventStream())
   }
   override fun onDetachedFromEngine( binding: FlutterPlugin.FlutterPluginBinding) {
   }
@@ -33,7 +43,7 @@ class CustomWebviewPlugin: FlutterPlugin{
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 private class NativeWebView(context: Context, creationParams: Map<String?, Any?>?): PlatformView {
-  private lateinit var webView: WebView
+  private var webView: WebView
   private lateinit var  cookieManager: CookieManager
   private var isFirst = true
   private var cookies: String? = null
@@ -46,10 +56,10 @@ private class NativeWebView(context: Context, creationParams: Map<String?, Any?>
   }
 
   init {
-    val header: Map<String, String>? = creationParams?.get("header") as Map<String, String>?
-    val body: Map<String, String>? = creationParams?.get("body") as Map<String, String>?
-    val url: String = creationParams?.get("url") as String
-    val method: String = creationParams?.get("method") as String
+    val header: Map<String, String>? = creationParams?.get("header") as? Map<String, String>
+    val body: Map<String, String>? = creationParams?.get("body") as? Map<String, String>
+    val url: String = creationParams?.get("url") as? String ?: ""
+    val method: String = creationParams?.get("method") as? String ?: ""
 
     webView = WebView(context)
     this.setWebViewClient(header, body, method)
@@ -106,6 +116,11 @@ private class NativeWebView(context: Context, creationParams: Map<String?, Any?>
       this.method = method
     }
 
+    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+      sink?.success(request?.url.toString())
+      return super.shouldOverrideUrlLoading(view, request)
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     override fun shouldInterceptRequest(
       view: WebView?,
@@ -122,7 +137,7 @@ private class NativeWebView(context: Context, creationParams: Map<String?, Any?>
     private fun getNewResponse(url: String): WebResourceResponse? {
       return try {
         val client = OkHttpClient()
-        var request: Request
+        val request: Request
 
         //
         // GET
@@ -201,17 +216,14 @@ class NativeWebViewFactory: PlatformViewFactory(StandardMessageCodec.INSTANCE) {
   }
 }
 
-class WebAppInterface(private val context: Context) {
+private class EventStream(): EventChannel.StreamHandler {
 
-  /** Show a toast from the web page  */
-  @JavascriptInterface
-  fun showToast(toast: String) {
-//        Toast.makeText(context, toast, Toast.LENGTH_SHORT).show()
+
+  override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+    sink = events
   }
 
-  /** Close the WebView from the web page  */
-  @JavascriptInterface
-  fun closeWebView() {
-//        (context as Activity).finish()
+  override fun onCancel(arguments: Any?) {
+    Log.d("WebViewEventChannel", "End")
   }
 }

@@ -8,7 +8,7 @@ const String _viewType = 'FlutterCustomWebView';
 
 enum CallMethod { post, get }
 
-class CustomWebView extends StatelessWidget {
+class CustomWebView extends StatefulWidget {
   const CustomWebView({
     super.key,
     this.header,
@@ -21,6 +21,41 @@ class CustomWebView extends StatelessWidget {
   final Map<String, String>? body;
   final String url;
   final CallMethod callMethod;
+
+  @override
+  State<CustomWebView> createState() => _CustomWebViewState();
+}
+
+class _CustomWebViewState extends State<CustomWebView> {
+  String callbackUrl = 'Awaiting...';
+
+  @override
+  void initState() {
+    super.initState();
+    initPlatformState();
+  }
+
+// Async method for setting up
+  Future<void> initPlatformState() async {
+    const stream = EventChannel("flutter.webview.eventChannel");
+    stream
+        .receiveBroadcastStream()
+        .listen((event) => onData(event), onError: onError);
+  }
+
+  void onData(Object url) {
+    print("*****************************");
+    print(url.toString());
+    print("*****************************");
+
+    setState(() {
+      callbackUrl = url.toString();
+    });
+  }
+
+  void onError(Object error) {
+    print('Something went wrong!');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +74,10 @@ class CustomWebView extends StatelessWidget {
           viewType: _viewType,
           layoutDirection: TextDirection.ltr,
           creationParams: {
-            "header": header ?? {},
-            "body": body ?? {},
-            "url": url,
-            "method": callMethod == CallMethod.post ? "post" : "get",
+            "header": widget.header ?? {},
+            "body": widget.body ?? {},
+            "url": widget.url,
+            "method": widget.callMethod == CallMethod.post ? "post" : "get",
           },
           creationParamsCodec: const StandardMessageCodec(),
           onFocus: () {

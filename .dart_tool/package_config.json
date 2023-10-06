@@ -39,7 +39,7 @@
     },
     {
       "name": "flutter",
-      "rootUri": "file:///Users/supersexy/dev/flutter/packages/flutter",
+      "rootUri": "file:///Users/supersexy/dev/flutter/flutter_2.10.4/packages/flutter",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -51,7 +51,7 @@
     },
     {
       "name": "flutter_test",
-      "rootUri": "file:///Users/supersexy/dev/flutter/packages/flutter_test",
+      "rootUri": "file:///Users/supersexy/dev/flutter/flutter_2.10.4/packages/flutter_test",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -99,7 +99,7 @@
     },
     {
       "name": "sky_engine",
-      "rootUri": "file:///Users/supersexy/dev/flutter/bin/cache/pkg/sky_engine",
+      "rootUri": "file:///Users/supersexy/dev/flutter/flutter_2.10.4/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -152,7 +152,7 @@
       "languageVersion": "3.0"
     }
   ],
-  "generated": "2023-09-27T08:49:13.024553Z",
+  "generated": "2023-10-05T01:30:06.704057Z",
   "generator": "pub",
   "generatorVersion": "3.0.6"
 }

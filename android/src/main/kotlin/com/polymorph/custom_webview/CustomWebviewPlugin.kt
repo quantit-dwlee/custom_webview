@@ -84,6 +84,7 @@ private class NativeWebView(context: Context, creationParams: Map<String?, Any?>
     webView.settings.setSupportZoom(true)
     webView.settings.domStorageEnabled = true
     webView.settings.allowFileAccess = true
+    webView.setBackgroundColor(Color.WHITE)
     webView.webViewClient = MyWebViewClient(header, body, method)
     webView.webChromeClient = WebChromeClient()
   }

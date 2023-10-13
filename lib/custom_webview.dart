@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:custom_webview/enum/navigation_decision.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -15,20 +18,20 @@ class CustomWebView extends StatefulWidget {
     this.body,
     this.callMethod = CallMethod.get,
     required this.url,
+    required this.onNavigationRequest,
   });
 
   final Map<String, String>? header;
   final Map<String, String>? body;
   final String url;
   final CallMethod callMethod;
+  final FutureOr<NavigationDecision> Function(String url) onNavigationRequest;
 
   @override
   State<CustomWebView> createState() => _CustomWebViewState();
 }
 
 class _CustomWebViewState extends State<CustomWebView> {
-  String callbackUrl = 'Awaiting...';
-
   @override
   void initState() {
     super.initState();
@@ -44,18 +47,10 @@ class _CustomWebViewState extends State<CustomWebView> {
   }
 
   void onData(Object url) {
-    print("*****************************");
-    print(url.toString());
-    print("*****************************");
-
-    setState(() {
-      callbackUrl = url.toString();
-    });
+    widget.onNavigationRequest(url as String);
   }
 
-  void onError(Object error) {
-    print('Something went wrong!');
-  }
+  void onError(Object error) {}
 
   @override
   Widget build(BuildContext context) {

@@ -2,6 +2,7 @@ package com.polymorph.custom_webview
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.os.Build
 import android.util.Log
 import android.view.View
@@ -20,6 +21,7 @@ import okhttp3.Request
 
 
 private var binaryMessenger: BinaryMessenger? = null
+// TODO 나중에 methodChannel로 교체 예정.
 private const val eventChannel = "flutter.webview.eventChannel"
 private var sink: EventChannel.EventSink? = null
 
@@ -84,7 +86,7 @@ private class NativeWebView(context: Context, creationParams: Map<String?, Any?>
     webView.settings.setSupportZoom(true)
     webView.settings.domStorageEnabled = true
     webView.settings.allowFileAccess = true
-    webView.setBackgroundColor(Color.WHITE)
+    webView.setBackgroundColor(Color.parseColor("#FFFFFF"));
     webView.webViewClient = MyWebViewClient(header, body, method)
     webView.webChromeClient = WebChromeClient()
   }

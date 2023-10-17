@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:custom_webview/custom_webview.dart';
 import 'package:custom_webview/enum/navigation_decision.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +32,7 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Container(),
+        body: CustomWebView(url: "https://naver.com", onNavigationRequest: (String t) async {return NavigationDecision.navigate;},)
       ),
     );
   }

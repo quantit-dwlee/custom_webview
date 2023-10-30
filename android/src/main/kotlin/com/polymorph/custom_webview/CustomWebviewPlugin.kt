@@ -121,11 +121,12 @@ private class NativeWebView(context: Context, creationParams: Map<String?, Any?>
 
     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
       val url = request?.url.toString()
+
       sink?.success(url)
 
       // 특정 URL 막기
       if (url.startsWith("kbma://loadmable")) {
-        return false
+        return true
       }
       return super.shouldOverrideUrlLoading(view, request)
     }
